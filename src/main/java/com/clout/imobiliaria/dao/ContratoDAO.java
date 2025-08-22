@@ -26,15 +26,12 @@ public class ContratoDAO {
                 try (ResultSet rs = ps.getGeneratedKeys()) {
                     if (rs.next()) {
                         int contratoId = rs.getInt(1);
-
-                        // Marca o imóvel como indisponível
                         try (PreparedStatement ps2 = conn.prepareStatement("UPDATE imoveis SET disponivel=0 WHERE id=?")) {
                             ps2.setInt(1, c.getImovelId());
                             ps2.executeUpdate();
                         }
-
                         conn.commit();
-                        return contratoId; // ✅ retorno garantido no caminho feliz
+                        return contratoId;
                     }
                 }
             } catch (SQLException e) {
@@ -46,10 +43,10 @@ public class ContratoDAO {
         } catch (SQLException e) {
             throw new RuntimeException("Erro ao inserir contrato: " + e.getMessage(), e);
         }
-        return -1; // ✅ fallback (elimina o erro “must return a result of type int”)
+        return -1;
     }
 
-    public void encerrarContrato(int contratoId) { // ✅ usado no Main
+    public void encerrarContrato(int contratoId) {
         String sql = "UPDATE contratos SET ativo=0 WHERE id=?";
         String sql2 = "UPDATE imoveis SET disponivel=1 WHERE id=(SELECT imovel_id FROM contratos WHERE id=?)";
         try (Connection conn = Database.getConnection()) {
@@ -58,10 +55,8 @@ public class ContratoDAO {
                  PreparedStatement ps2 = conn.prepareStatement(sql2)) {
                 ps.setInt(1, contratoId);
                 ps.executeUpdate();
-
                 ps2.setInt(1, contratoId);
                 ps2.executeUpdate();
-
                 conn.commit();
             } catch (SQLException e) {
                 conn.rollback();
@@ -104,14 +99,9 @@ public class ContratoDAO {
 
     public List<String> clientesComMaisContratos(int limit) {
         List<String> rows = new ArrayList<>();
-        String sql = """
-                SELECT c.nome AS cliente, COUNT(*) AS total
-                FROM contratos ct
-                JOIN clientes c ON c.id = ct.cliente_id
-                GROUP BY ct.cliente_id
-                ORDER BY total DESC, cliente ASC
-                LIMIT ?
-                """;
+        String sql = "SELECT c.nome AS cliente, COUNT(*) AS total " +
+                     "FROM contratos ct JOIN clientes c ON c.id = ct.cliente_id " +
+                     "GROUP BY ct.cliente_id ORDER BY total DESC, cliente ASC LIMIT ?";
         try (Connection conn = Database.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, limit);

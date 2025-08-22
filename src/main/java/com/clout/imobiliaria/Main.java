@@ -8,6 +8,7 @@ import com.clout.imobiliaria.model.Contrato;
 import com.clout.imobiliaria.model.Imovel;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Scanner;
 
 public class Main {
@@ -23,18 +24,18 @@ public class Main {
             menu();
             int op = lerInt("Escolha: ");
             switch (op) {
-                case 1 -> cadCliente();
-                case 2 -> cadImovel();
-                case 3 -> cadContrato();
-                case 4 -> relatorios();
-                case 5 -> listarClientes();
-                case 6 -> listarImoveis();
-                case 7 -> encerrar();
-                case 0 -> {
+                case 1: cadCliente(); break;
+                case 2: cadImovel(); break;
+                case 3: cadContrato(); break;
+                case 4: relatorios(); break;
+                case 5: listarClientes(); break;
+                case 6: listarImoveis(); break;
+                case 7: encerrar(); break;
+                case 0:
                     System.out.println("Até logo!");
                     return;
-                }
-                default -> System.out.println("Opção inválida!");
+                default:
+                    System.out.println("Opção inválida!");
             }
             System.out.println();
         }
@@ -58,28 +59,33 @@ public class Main {
         System.out.println("4) Contratos expirando em 30 dias");
         int op = lerInt("Escolha: ");
         switch (op) {
-            case 1 -> {
-                var list = imovelDAO.listarDisponiveis();
+            case 1: {
+                List<Imovel> list = imovelDAO.listarDisponiveis();
                 if (list.isEmpty()) System.out.println("Nenhum.");
                 else list.forEach(System.out::println);
+                break;
             }
-            case 2 -> {
-                var list = contratoDAO.listarAtivos();
+            case 2: {
+                List<Contrato> list = contratoDAO.listarAtivos();
                 if (list.isEmpty()) System.out.println("Nenhum.");
                 else list.forEach(System.out::println);
+                break;
             }
-            case 3 -> {
+            case 3: {
                 int n = lerInt("Top N (ex: 5): ");
-                var rows = contratoDAO.clientesComMaisContratos(n <= 0 ? 5 : n);
+                List<String> rows = contratoDAO.clientesComMaisContratos(n <= 0 ? 5 : n);
                 if (rows.isEmpty()) System.out.println("Sem dados.");
                 else rows.forEach(System.out::println);
+                break;
             }
-            case 4 -> {
-                var list = contratoDAO.listarExpirandoEm(30);
+            case 4: {
+                List<Contrato> list = contratoDAO.listarExpirandoEm(30);
                 if (list.isEmpty()) System.out.println("Nenhum expirando nos próximos 30 dias.");
                 else list.forEach(System.out::println);
+                break;
             }
-            default -> System.out.println("Opção inválida.");
+            default:
+                System.out.println("Opção inválida.");
         }
     }
 
@@ -133,28 +139,28 @@ public class Main {
 
     private static void listarClientes() {
         System.out.println("-- Clientes --");
-        var l = clienteDAO.listarTodos();
+        List<Cliente> l = clienteDAO.listarTodos();
         if (l.isEmpty()) System.out.println("Nenhum.");
         else l.forEach(System.out::println);
     }
 
     private static void listarImoveis() {
         System.out.println("-- Imóveis --");
-        var l = imovelDAO.listarTodos();
+        List<Imovel> l = imovelDAO.listarTodos();
         if (l.isEmpty()) System.out.println("Nenhum.");
         else l.forEach(System.out::println);
     }
 
     private static void encerrar() {
         System.out.println("-- Encerrar Contrato --");
-        var l = contratoDAO.listarAtivos();
+        List<Contrato> l = contratoDAO.listarAtivos();
         if (l.isEmpty()) {
             System.out.println("Nenhum ativo.");
             return;
         }
         l.forEach(System.out::println);
         int id = lerInt("ID do contrato: ");
-        contratoDAO.encerrarContrato(id); // ✅ existe no DAO
+        contratoDAO.encerrarContrato(id);
         System.out.println("Encerrado.");
     }
 
