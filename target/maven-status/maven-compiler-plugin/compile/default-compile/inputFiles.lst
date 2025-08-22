@@ -1,0 +1,8 @@
+/workspaces/Sistema_de_Gestao_Imobiliaria/src/main/java/com/clout/imobiliaria/dao/ImovelDAO.java
+/workspaces/Sistema_de_Gestao_Imobiliaria/src/main/java/com/clout/imobiliaria/Main.java
+/workspaces/Sistema_de_Gestao_Imobiliaria/src/main/java/com/clout/imobiliaria/model/Contrato.java
+/workspaces/Sistema_de_Gestao_Imobiliaria/src/main/java/com/clout/imobiliaria/model/Imovel.java
+/workspaces/Sistema_de_Gestao_Imobiliaria/src/main/java/com/clout/imobiliaria/dao/ClienteDAO.java
+/workspaces/Sistema_de_Gestao_Imobiliaria/src/main/java/com/clout/imobiliaria/dao/ContratoDAO.java
+/workspaces/Sistema_de_Gestao_Imobiliaria/src/main/java/com/clout/imobiliaria/db/Database.java
+/workspaces/Sistema_de_Gestao_Imobiliaria/src/main/java/com/clout/imobiliaria/model/Cliente.java
