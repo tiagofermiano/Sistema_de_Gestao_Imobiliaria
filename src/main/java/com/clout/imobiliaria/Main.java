@@ -1,11 +1,17 @@
 package com.clout.imobiliaria;
 
-import com.clout.imobiliaria.dao.*;
-import com.clout.imobiliaria.model.*;
+import com.clout.imobiliaria.dao.ClienteDAO;
+import com.clout.imobiliaria.dao.ContratoDAO;
+import com.clout.imobiliaria.dao.ImovelDAO;
+import com.clout.imobiliaria.model.Cliente;
+import com.clout.imobiliaria.model.Contrato;
+import com.clout.imobiliaria.model.Imovel;
+
 import java.time.LocalDate;
-import java.util.*;
+import java.util.Scanner;
 
 public class Main {
+
     private static final Scanner sc = new Scanner(System.in);
     private static final ClienteDAO clienteDAO = new ClienteDAO();
     private static final ImovelDAO imovelDAO = new ImovelDAO();
@@ -35,43 +41,43 @@ public class Main {
     }
 
     private static void menu() {
-        System.out.println(
-                "1) Cadastrar Cliente\n2) Cadastrar Imóvel\n3) Cadastrar Contrato\n4) Relatórios\n5) Listar Clientes\n6) Listar Imóveis\n7) Encerrar Contrato\n0) Sair");
+        System.out.println("1) Cadastrar Cliente");
+        System.out.println("2) Cadastrar Imóvel");
+        System.out.println("3) Cadastrar Contrato");
+        System.out.println("4) Relatórios");
+        System.out.println("5) Listar Clientes");
+        System.out.println("6) Listar Imóveis");
+        System.out.println("7) Encerrar Contrato");
+        System.out.println("0) Sair");
     }
 
     private static void relatorios() {
-        System.out.println(
-                "1) Imóveis disponíveis\n2) Contratos ativos\n3) Clientes com mais contratos\n4) Contratos expirando em 30 dias");
+        System.out.println("1) Imóveis disponíveis");
+        System.out.println("2) Contratos ativos");
+        System.out.println("3) Clientes com mais contratos");
+        System.out.println("4) Contratos expirando em 30 dias");
         int op = lerInt("Escolha: ");
         switch (op) {
             case 1 -> {
-                var l = imovelDAO.listarDisponiveis();
-                if (l.isEmpty())
-                    System.out.println("Nenhum.");
-                else
-                    l.forEach(System.out::println);
+                var list = imovelDAO.listarDisponiveis();
+                if (list.isEmpty()) System.out.println("Nenhum.");
+                else list.forEach(System.out::println);
             }
             case 2 -> {
-                var l = contratoDAO.listarAtivos();
-                if (l.isEmpty())
-                    System.out.println("Nenhum.");
-                else
-                    l.forEach(System.out::println);
+                var list = contratoDAO.listarAtivos();
+                if (list.isEmpty()) System.out.println("Nenhum.");
+                else list.forEach(System.out::println);
             }
             case 3 -> {
                 int n = lerInt("Top N (ex: 5): ");
                 var rows = contratoDAO.clientesComMaisContratos(n <= 0 ? 5 : n);
-                if (rows.isEmpty())
-                    System.out.println("Sem dados.");
-                else
-                    rows.forEach(System.out::println);
+                if (rows.isEmpty()) System.out.println("Sem dados.");
+                else rows.forEach(System.out::println);
             }
             case 4 -> {
-                var l = contratoDAO.listarExpirandoEm(30);
-                if (l.isEmpty())
-                    System.out.println("Nenhum expirando nos próximos 30 dias.");
-                else
-                    l.forEach(System.out::println);
+                var list = contratoDAO.listarExpirandoEm(30);
+                if (list.isEmpty()) System.out.println("Nenhum expirando nos próximos 30 dias.");
+                else list.forEach(System.out::println);
             }
             default -> System.out.println("Opção inválida.");
         }
@@ -96,9 +102,9 @@ public class Main {
         System.out.print("Tipo: ");
         String tipo = sc.nextLine();
         System.out.print("Endereço: ");
-        String e = sc.nextLine();
+        String end = sc.nextLine();
         System.out.print("Cidade: ");
-        String c = sc.nextLine();
+        String cid = sc.nextLine();
         System.out.print("Estado (UF): ");
         String uf = sc.nextLine();
         System.out.print("CEP: ");
@@ -108,7 +114,7 @@ public class Main {
         int b = lerInt("Banheiros: ");
         int v = lerInt("Vagas: ");
         boolean mob = lerBool("Mobiliado (s/n): ");
-        int id = imovelDAO.inserir(new Imovel(tipo, e, c, uf, cep, m, q, b, v, mob, true, true));
+        int id = imovelDAO.inserir(new Imovel(tipo, end, cid, uf, cep, m, q, b, v, mob, true, true));
         System.out.println("Imóvel #" + id + " cadastrado.");
     }
 
@@ -128,19 +134,15 @@ public class Main {
     private static void listarClientes() {
         System.out.println("-- Clientes --");
         var l = clienteDAO.listarTodos();
-        if (l.isEmpty())
-            System.out.println("Nenhum.");
-        else
-            l.forEach(System.out::println);
+        if (l.isEmpty()) System.out.println("Nenhum.");
+        else l.forEach(System.out::println);
     }
 
     private static void listarImoveis() {
         System.out.println("-- Imóveis --");
         var l = imovelDAO.listarTodos();
-        if (l.isEmpty())
-            System.out.println("Nenhum.");
-        else
-            l.forEach(System.out::println);
+        if (l.isEmpty()) System.out.println("Nenhum.");
+        else l.forEach(System.out::println);
     }
 
     private static void encerrar() {
@@ -152,10 +154,11 @@ public class Main {
         }
         l.forEach(System.out::println);
         int id = lerInt("ID do contrato: ");
-        contratoDAO.encerrarContrato(id);
+        contratoDAO.encerrarContrato(id); // ✅ existe no DAO
         System.out.println("Encerrado.");
     }
 
+    // ==== Utils de input ====
     private static int lerInt(String msg) {
         while (true) {
             try {
@@ -188,7 +191,7 @@ public class Main {
         while (true) {
             try {
                 System.out.print(msg);
-                return java.time.LocalDate.parse(sc.nextLine().trim());
+                return LocalDate.parse(sc.nextLine().trim());
             } catch (Exception e) {
                 System.out.println("Use YYYY-MM-DD.");
             }
